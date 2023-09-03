@@ -1,0 +1,4 @@
+@host=http://localhost:7001/api
+GET  {{host}}/auctions/40490065-dac7-46b6-acc4-df507e0d6570
+Content-Type: application/json 
+ 
