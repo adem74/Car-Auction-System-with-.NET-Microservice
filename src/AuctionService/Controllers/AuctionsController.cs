@@ -28,13 +28,17 @@ public class AuctionsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<AuctionDto>>> GetAllAuctions()
+    public async Task<ActionResult<List<AuctionDto>>> GetAllAuctions(string date)
     {
-        var auctions = await _context.Auctions
-            .Include(a => a.Item)
-            .OrderBy(x => x.Item.Make)
-            .ToListAsync();
-        return _mapper.Map<List<AuctionDto>>(auctions);
+        var query = _context.Auctions.OrderBy(x => x.Item.Make).AsQueryable();
+        if (!string.IsNullOrEmpty(date))
+        {
+            query = query.Where(
+                x => x.UpdatedAt.CompareTo(DateTime.Parse(date).ToUniversalTime()) > 0
+            );
+        }
+
+        return await query.ProjectTo<AuctionDto>(_mapper.ConfigurationProvider).ToListAsync();
         // return await _repo.GetAuctionsAsync(date);
     }
 
@@ -108,26 +112,28 @@ public class AuctionsController : ControllerBase
     }
 
     //  [Authorize]
-      [HttpDelete("{id}")]
-      public async Task<ActionResult> DeleteAuction(Guid id)
-      {
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteAuction(Guid id)
+    {
         //  var auction = await _repo.GetAuctionEntityById(id);
-      var auction = await _context.Auctions
+        var auction = await _context.Auctions
             .Include(a => a.Item)
             .FirstOrDefaultAsync(x => x.Id == id);
-          if (auction == null) return NotFound();
-  
-        //  if (auction.Seller != User.Identity.Name) return Forbid();
-  _context.Auctions.Remove(auction);
-       //   _repo.RemoveAuction(auction);
-  
-       //   await _publishEndpoint.Publish<AuctionDeleted>(new { Id = auction.Id.ToString() });
-  
-        //  var result = await _repo.SaveChangesAsync();
-          var result = await _context.SaveChangesAsync() > 0;
+        if (auction == null)
+            return NotFound();
 
-          if (!result) return BadRequest("Could not update DB");
-  
-          return Ok();
-      }
+        //  if (auction.Seller != User.Identity.Name) return Forbid();
+        _context.Auctions.Remove(auction);
+        //   _repo.RemoveAuction(auction);
+
+        //   await _publishEndpoint.Publish<AuctionDeleted>(new { Id = auction.Id.ToString() });
+
+        //  var result = await _repo.SaveChangesAsync();
+        var result = await _context.SaveChangesAsync() > 0;
+
+        if (!result)
+            return BadRequest("Could not update DB");
+
+        return Ok();
+    }
 }
