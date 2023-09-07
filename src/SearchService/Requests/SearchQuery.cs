@@ -1,6 +1,6 @@
 ﻿namespace SearchService;
 
-public class SeachQuery
+public class SearchQuery
 {
     public string SearchTerm { get; set; }
     public int PageNumber { get; set; } = 1;

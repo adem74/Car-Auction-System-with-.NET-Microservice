@@ -9,7 +9,7 @@ namespace SearchService;
 public class SearchController : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<Item>>> SeachItems([FromQuery] SeachQuery seachQuery)
+    public async Task<ActionResult<List<Item>>> SeachItems([FromQuery] SearchQuery seachQuery)
     {
         var query = DB.PagedSearch<Item, Item>();
         if (!string.IsNullOrEmpty(seachQuery.SearchTerm))
