@@ -68,7 +68,7 @@ public class AuctionsController : ControllerBase
           return auction; */
     }
 
-      [Authorize]
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<AuctionDto>> CreateAuction(CreateAuctionDto auctionDto)
     {
@@ -90,7 +90,7 @@ public class AuctionsController : ControllerBase
         return CreatedAtAction(nameof(GetAuctionById), new { auction.Id }, newAuction);
     }
 
-      [Authorize]
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateAuction(Guid id, UpdateAuctionDto updateAuctionDto)
     {
@@ -119,7 +119,7 @@ public class AuctionsController : ControllerBase
         return BadRequest("Problem saving changes");
     }
 
-      [Authorize]
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteAuction(Guid id)
     {

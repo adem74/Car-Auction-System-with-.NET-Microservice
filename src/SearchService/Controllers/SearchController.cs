@@ -18,12 +18,13 @@ public class SearchController : ControllerBase
         }
         query = seachQuery.OrderBy switch
         {
-            "make" => query.Sort(x => x.Ascending(a => a.Make)),
+            "make"
+                => query.Sort(x => x.Ascending(a => a.Make)).Sort(x => x.Ascending(a => a.Model)),
             "new" => query.Sort(x => x.Descending(a => a.CreatedAt)),
             _ => query.Sort(x => x.Ascending(a => a.AuctionEnd)),
         };
 
-        query = seachQuery.OrderBy switch
+        query = seachQuery.FilterBy switch
         {
             "finished" => query.Match(x => x.AuctionEnd < DateTime.UtcNow),
             "endingSoon"
@@ -31,8 +32,9 @@ public class SearchController : ControllerBase
                     x =>
                         x.AuctionEnd < DateTime.UtcNow.AddHours(6) && x.AuctionEnd > DateTime.UtcNow
                 ),
-            _ => query.Match(x => x.AuctionEnd > DateTime.UtcNow),
+            _ => query.Match(x => x.AuctionEnd > DateTime.UtcNow)
         };
+
         if (!string.IsNullOrEmpty(seachQuery.Seller))
         {
             query.Match(x => x.Seller == seachQuery.Seller);
